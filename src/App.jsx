@@ -1,51 +1,46 @@
 import React, { useState } from "react";
 import "./App.css";
 import { categories } from './data/categories';
+import CategoryColumn from './components/CategoryColumn';
+import ThemeToggle from './components/ThemeToggle';
+import ScorePanel from './components/ScorePanel';
 
-
-
-function QuestionCard({ value, question, answer }) {
-  const [revealed, setRevealed] = useState(false);
-
-  return (
-    <div className="question-card" onClick={() => setRevealed(!revealed)}>
-      {revealed ? (
-        <p className="answer-text">{answer}</p>
-      ) : (
-        <>
-          <p className="question-value">${value}</p>
-          <p className="question-text">{question}</p>
-        </>
-      )}
-    </div>
-  );
-}
-
-function CategoryColumn({ category }) {
-  return (
-    <div className="category-column">
-      <h2 className="category-title">{category.name}</h2>
-      {category.questions.map((q, index) => (
-        <QuestionCard key={index} value={q.value} question={q.question} answer={q.answer} />
-      ))}
-    </div>
-  );
-}
 
 export default function JeopardyBoard() {
   const [isCharizardMode, setIsCharizardMode] = useState(false);
+  const [players, setPlayers] = useState([
+  { name: "Player 1", score: 0 },
+  { name: "Player 2", score: 0 }
+]);
+const [currentPlayer, setCurrentPlayer] = useState(0);
+const updateScore = (points, isCorrect) => {
+  setPlayers(prevPlayers => {
+    const newPlayers = [...prevPlayers];
+    if (isCorrect) {
+      newPlayers[currentPlayer].score += points;
+    } else {
+      newPlayers[currentPlayer].score -= points;
+    }
+    return newPlayers;
+  });
+  setCurrentPlayer((currentPlayer + 1) % players.length);
+};
+
   return (
        <div className={isCharizardMode ? "board-container charizard-mode" : "board-container"}>
       <h1 className="board-title">FNAF Jeopardy</h1>
-      <button className= "toggle-btn" onClick={() => setIsCharizardMode(!isCharizardMode)}>
-      {isCharizardMode ? " Switch to Blastoise" : "Switch to Charizard"} </button>
-      
+    <ThemeToggle isCharizardMode={isCharizardMode} onToggle={() => setIsCharizardMode(!isCharizardMode)} />
 
-      <div className="board-grid">
-        {categories.map((cat, index) => (
-          <CategoryColumn key={index} category={cat} />
-        ))}
-      </div>
-    </div>
-  );
+      
+     <ScorePanel players={players} currentPlayer={currentPlayer} />
+
+
+  
+
+<div className="board-grid">
+{categories.map((cat, index) => (
+<CategoryColumn key={index} category={cat} updateScore={updateScore} />))}
+</div>
+</div>
+);
 }
