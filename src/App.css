@@ -1,5 +1,4 @@
 /* App.css - Styling for React Jeopardy Game */
-
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
@@ -7,10 +6,16 @@ body {
   color: white;
 }
 
+#root {
+  width: 100%;
+}
+
 .board-container {
   min-height: 100vh;
+  width: 100%;
   padding: 40px;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .board-title {
